@@ -18,6 +18,7 @@ public class Escape {
     public record Result(int[] path, int visited, int deadEnds) {}
 
     public static Result escape(Input.Walls w, int[] broken) {
+        // TODO
         int n = w.cells();
         int cols = w.cols();
         int exit = n - 1;

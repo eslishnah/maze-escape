@@ -1,4 +1,7 @@
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Missions 4 and 5. The slides: a directed graph. Cells are 0 .. n-1, slide i goes from s.from()[i] to s.to()[i]
@@ -21,6 +24,7 @@ public class Zones {
      * Is DAG in Main is 1 when the number of zones equals the number of cells (no cycle), so you do not need a separate check.
      */
     public static int[] kosaraju(Input.Slides s) {
+        // TODO
         int n = s.n();
         int[][] outgoing = Graphs.slidesFrom(s);
         int[][] incoming = Graphs.slidesInto(s);
@@ -100,6 +104,55 @@ public class Zones {
      */
     public static long[] routes(Input.Slides s, int[] zoneOf, int zoneCount) {
         // TODO
-        return new long[]{0, 0};
+        // Build the zone graph, keeping only the cheapest slide for each pair.
+        ArrayList<HashMap<Integer, Integer>> graph = new ArrayList<>();
+        for (int zone = 0; zone < zoneCount; zone++) {
+            graph.add(new HashMap<>());
+        }
+
+        for (int slide = 0; slide < s.count(); slide++) {
+            int from = zoneOf[s.from()[slide]];
+            int to = zoneOf[s.to()[slide]];
+
+            if (from == to) {
+                continue;
+            }
+
+            HashMap<Integer, Integer> edges = graph.get(from);
+            int time = s.time()[slide];
+            Integer previous = edges.get(to);
+            if (previous == null || time < previous) {
+                edges.put(to, time);
+            }
+        }
+
+        // A chain containing only one zone already has one stage.
+        int[] stages = new int[zoneCount];
+        Arrays.fill(stages, 1);
+
+        long[] distance = new long[zoneCount];
+        Arrays.fill(distance, Long.MAX_VALUE);
+        distance[zoneOf[0]] = 0;
+
+        int flowStages = 0;
+
+        // Kosaraju numbered zones in topological order: every edge goes forwards.
+        for (int zone = 0; zone < zoneCount; zone++) {
+            flowStages = Math.max(flowStages, stages[zone]);
+
+            for (Map.Entry<Integer, Integer> edge : graph.get(zone).entrySet()) {
+                int next = edge.getKey();
+                int time = edge.getValue();
+
+                stages[next] = Math.max(stages[next], stages[zone] + 1);
+
+                if (distance[zone] != Long.MAX_VALUE) {
+                    distance[next] = Math.min(distance[next], distance[zone] + time);
+                }
+            }
+        }
+
+        int exitZone = zoneOf[s.n() - 1];
+        return new long[]{flowStages, distance[exitZone]};
     }
 }
