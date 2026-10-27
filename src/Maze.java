@@ -3,6 +3,10 @@
  * A wall k joins the cells w.a()[k] and w.b()[k] and costs w.cost()[k]. Indexes start from 0,
  * the line number in walls.txt is the index + 1. The cells are connected by DisjointSet.
  */
+
+import java.util.Arrays;
+import java.util.PriorityQueue;
+
 public class Maze {
 
     /**
@@ -33,7 +37,32 @@ public class Maze {
      */
     public static int[] cheapestMaze(Input.Walls w) {
         // TODO
-        return new int[0];
+        int n = w.rows() * w.cols();
+        DisjointSet dsu = new DisjointSet(n);
+
+        Integer[] order = new Integer[w.count()];
+        for (int k = 0; k < w.count(); k++) {
+            order[k] = k;
+        }
+
+        Arrays.sort(order, (a, b) ->
+                Long.compare(w.cost()[a], w.cost()[b]));
+
+        int[] broken = new int[n - 1];
+        int brokenCount = 0;
+
+        for (int k : order) {
+            if (dsu.union(w.a()[k], w.b()[k])) {
+                broken[brokenCount] = k;
+                brokenCount++;
+
+                if (brokenCount == n - 1) {
+                    break;
+                }
+            }
+        }
+
+        return broken;
     }
 
     /**
@@ -42,6 +71,67 @@ public class Maze {
      */
     public static long primCost(Input.Walls w) {
         // TODO
-        return 0;
+        int n = w.rows() * w.cols();
+
+        // Count walls touching each cell.
+        int[] degree = new int[n];
+        for (int k = 0; k < w.count(); k++) {
+            degree[w.a()[k]]++;
+            degree[w.b()[k]]++;
+        }
+
+        // Store wall indexes for each cell.
+        int[][] adjacent = new int[n][];
+        for (int cell = 0; cell < n; cell++) {
+            adjacent[cell] = new int[degree[cell]];
+        }
+
+        int[] position = new int[n];
+        for (int k = 0; k < w.count(); k++) {
+            int a = w.a()[k];
+            int b = w.b()[k];
+
+            adjacent[a][position[a]++] = k;
+            adjacent[b][position[b]++] = k;
+        }
+
+        PriorityQueue<Integer> queue = new PriorityQueue<>(
+                (a, b) -> Long.compare(w.cost()[a], w.cost()[b]));
+
+        boolean[] visited = new boolean[n];
+        visited[0] = true;
+        int visitedCount = 1;
+        long totalCost = 0;
+
+        for (int k : adjacent[0]) {
+            queue.add(k);
+        }
+
+        while (!queue.isEmpty() && visitedCount < n) {
+            int k = queue.poll();
+            int a = w.a()[k];
+            int b = w.b()[k];
+
+            if (visited[a] && visited[b]) {
+                continue;
+            }
+
+            int next = visited[a] ? b : a;
+            visited[next] = true;
+            visitedCount++;
+            totalCost += w.cost()[k];
+
+            for (int wall : adjacent[next]) {
+                int other = w.a()[wall] == next
+                        ? w.b()[wall]
+                        : w.a()[wall];
+
+                if (!visited[other]) {
+                    queue.add(wall);
+                }
+            }
+        }
+
+        return totalCost;
     }
 }
