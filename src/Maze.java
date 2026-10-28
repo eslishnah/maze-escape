@@ -73,14 +73,14 @@ public class Maze {
         // TODO
         int n = w.rows() * w.cols();
 
-        // Count walls touching each cell.
+
         int[] degree = new int[n];
         for (int k = 0; k < w.count(); k++) {
             degree[w.a()[k]]++;
             degree[w.b()[k]]++;
         }
 
-        // Store wall indexes for each cell.
+
         int[][] adjacent = new int[n][];
         for (int cell = 0; cell < n; cell++) {
             adjacent[cell] = new int[degree[cell]];

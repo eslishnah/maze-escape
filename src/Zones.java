@@ -35,7 +35,7 @@ public class Zones {
         int[] finishOrder = new int[n];
         int finished = 0;
 
-        // First pass: record cells only after all their outgoing slides are processed.
+
         for (int start = 0; start < n; start++) {
             if (visited[start]) {
                 continue;
@@ -67,7 +67,7 @@ public class Zones {
         Arrays.fill(zoneOf, -1);
         int zoneCount = 0;
 
-        // Second pass: explore reversed slides, starting with the last finished cell.
+
         for (int i = finished - 1; i >= 0; i--) {
             int start = finishOrder[i];
             if (zoneOf[start] != -1) {
@@ -104,7 +104,7 @@ public class Zones {
      */
     public static long[] routes(Input.Slides s, int[] zoneOf, int zoneCount) {
         // TODO
-        // Build the zone graph, keeping only the cheapest slide for each pair.
+
         ArrayList<HashMap<Integer, Integer>> graph = new ArrayList<>();
         for (int zone = 0; zone < zoneCount; zone++) {
             graph.add(new HashMap<>());
@@ -126,7 +126,7 @@ public class Zones {
             }
         }
 
-        // A chain containing only one zone already has one stage.
+
         int[] stages = new int[zoneCount];
         Arrays.fill(stages, 1);
 
@@ -136,7 +136,7 @@ public class Zones {
 
         int flowStages = 0;
 
-        // Kosaraju numbered zones in topological order: every edge goes forwards.
+
         for (int zone = 0; zone < zoneCount; zone++) {
             flowStages = Math.max(flowStages, stages[zone]);
 

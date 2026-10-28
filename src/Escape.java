@@ -35,7 +35,7 @@ public class Escape {
         int[] parent = new int[n];
         Arrays.fill(parent, -1);
 
-        // Each cell remembers which direction DFS should try next.
+
         int[] nextDirection = new int[n];
         int[] stack = new int[n];
         int top = 0;
@@ -53,10 +53,10 @@ public class Escape {
 
             int direction = nextDirection[cell]++;
             int next = switch (direction) {
-                case 0 -> cell >= cols ? cell - cols : -1;       // up
-                case 1 -> cell % cols < cols - 1 ? cell + 1 : -1; // right
-                case 2 -> cell + cols < n ? cell + cols : -1;     // down
-                default -> cell % cols > 0 ? cell - 1 : -1;      // left
+                case 0 -> cell >= cols ? cell - cols : -1;
+                case 1 -> cell % cols < cols - 1 ? cell + 1 : -1;
+                case 2 -> cell + cols < n ? cell + cols : -1;
+                default -> cell % cols > 0 ? cell - 1 : -1;
             };
 
             if (next == -1 || visited[next]) {
@@ -83,7 +83,7 @@ public class Escape {
             return new Result(new int[0], visitedCount, deadEnds);
         }
 
-        // Follow parents backwards, filling the path from its end.
+
         int length = 0;
         for (int cell = exit; cell != -1; cell = parent[cell]) {
             length++;

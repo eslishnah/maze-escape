@@ -26,12 +26,12 @@ public class DisjointSetTest {
 
         // TODO: add your own checks here
 
-                // Union of an element with itself must change nothing.
+
         DisjointSet single = new DisjointSet(1);
         check(!single.union(0, 0), "union with itself returns false");
         check(single.count() == 1, "self-union keeps the set count");
 
-        // Connect many elements in a chain.
+
         int n = 100_000;
         DisjointSet chain = new DisjointSet(n);
         boolean allJoined = true;
